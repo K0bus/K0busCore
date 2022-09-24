@@ -51,7 +51,9 @@ public abstract class Menu implements Listener {
     public void onClick(InventoryClickEvent e) {
         if(menuItemsHashMap.containsKey(e.getSlot()))
         {
-            menuItemsHashMap.get(e.getSlot()).onClick(e);
+            MenuItems menuItems = menuItemsHashMap.get(e.getSlot());
+            if(menuItems != null)
+                menuItems.onClick(e);
         }
     }
     public void onDrag(InventoryDragEvent e) {

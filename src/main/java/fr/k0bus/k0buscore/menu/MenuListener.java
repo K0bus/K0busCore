@@ -29,6 +29,7 @@ public class MenuListener implements Listener {
     {
         if(menuMap.containsKey(e.getInventory()))
         {
+            e.setCancelled(true);
             menuMap.get(e.getInventory()).onClick(e);
         }
     }
@@ -38,6 +39,7 @@ public class MenuListener implements Listener {
     {
         if(menuMap.containsKey(e.getInventory()))
         {
+            e.setCancelled(true);
             menuMap.get(e.getInventory()).onDrag(e);
         }
     }

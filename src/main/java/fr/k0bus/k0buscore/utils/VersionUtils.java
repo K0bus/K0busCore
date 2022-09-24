@@ -1,4 +1,4 @@
-package fr.k0bus.k0buscore.config;
+package fr.k0bus.k0buscore.utils;
 
 import org.bukkit.Bukkit;
 

@@ -5,7 +5,9 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class MenuItems extends ItemStack {
@@ -36,6 +38,58 @@ public class MenuItems extends ItemStack {
         this(m, 1, consumer, sound);
     }
 
+    public MenuItems(ItemStack itemStack, Consumer<InventoryClickEvent> consumer, Sound sound)
+    {
+        super(itemStack);
+        setConsumer(consumer);
+        setSound(sound);
+    }
+    public MenuItems(ItemStack itemStack, Consumer<InventoryClickEvent> consumer)
+    {
+        super(itemStack);
+        setConsumer(consumer);
+    }
+    public MenuItems(ItemStack itemStack)
+    {
+        super(itemStack);
+    }
+
+    public void setConsumer(Consumer<InventoryClickEvent> consumer) {
+        this.consumer = consumer;
+    }
+
+    public void setSound(Sound sound) {
+        this.sound = sound;
+    }
+
+    public void setLore(List<String> lore)
+    {
+        ItemMeta itemMeta = getItemMeta();
+        if(itemMeta != null)
+        {
+            itemMeta.setLore(lore);
+            setItemMeta(itemMeta);
+        }
+    }
+    public void setDisplayname(String str)
+    {
+        ItemMeta itemMeta = getItemMeta();
+        if(itemMeta != null)
+        {
+            itemMeta.setDisplayName(str);
+            setItemMeta(itemMeta);
+        }
+    }
+    public void setModel(int model)
+    {
+        ItemMeta itemMeta = getItemMeta();
+        if(itemMeta != null)
+        {
+            itemMeta.setCustomModelData(model);
+            setItemMeta(itemMeta);
+        }
+    }
+
     public boolean isClickable() {
         return this.consumer != null;
     }
@@ -48,5 +102,4 @@ public class MenuItems extends ItemStack {
         p.playSound(p.getLocation(), sound, 0.5f, 1);
         consumer.accept(e);
     }
-
 }

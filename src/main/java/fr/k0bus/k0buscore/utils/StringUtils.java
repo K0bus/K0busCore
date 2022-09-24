@@ -6,16 +6,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StringUtils {
-    public static String formatColor(String text)
-    {
-        Pattern p = Pattern.compile("#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})");
-        Matcher m = p.matcher(text);
-        try {
-            ChatColor.class.getMethod("of", (Class<?>[]) null);
-            while (m.find()) {
-                text = text.replace("#" + m.group(1), ChatColor.of("#" + m.group(1)).toString());
-            }
-        }catch (NoSuchMethodException | SecurityException ignored){}
-        return ChatColor.translateAlternateColorCodes('&',text);
+
+    private static final Pattern HEX_PATTERN = Pattern.compile("&#(\\w{5}[0-9a-f])");
+
+    public static String translateColor(String s) {
+
+        if (VersionUtils.getMCVersion() < 16) {
+            return ChatColor.translateAlternateColorCodes('&', s);
+        }
+
+        Matcher matcher = HEX_PATTERN.matcher(s);
+        StringBuffer buffer = new StringBuffer();
+
+        while(matcher.find()) {
+            matcher.appendReplacement(buffer, ChatColor.of("#" + matcher.group(1)).toString());
+        }
+
+        return ChatColor.translateAlternateColorCodes('&', matcher.appendTail(buffer).toString());
     }
 }

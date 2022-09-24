@@ -6,6 +6,7 @@ prefix: KCore
 softdepend:
   - PlaceHolderAPI
   - Vault
+  - ItemsAdder
 authors: [ K0bus ]
 description: K0bus plugin core
 website: https://k0bus.fr
