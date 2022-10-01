@@ -1,6 +1,5 @@
 package fr.k0bus.k0buscore.commands;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -64,22 +63,21 @@ public class Command implements CommandExecutor, TabCompleter {
     public void run(CommandSender sender, String[] args) {}
 
     @Override
-    public boolean onCommand(CommandSender sender, @NotNull org.bukkit.command.Command command, @NotNull String label, @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull org.bukkit.command.Command command, @NotNull String label, @NotNull String[] args) {
         if(!isAllowed(sender)){
             sender.sendMessage("Not allowed");
         }
-        if(subCommands.size()>0)
-            if(args.length>0)
-            {
-                if(subCommands.containsKey(args[0]))
+        if(subCommands.size()>0) {
+            if (args.length > 0) {
+                if (subCommands.containsKey(args[0]))
                     subCommands.get(args[0]).onCommand(sender, command, label, Arrays.copyOfRange(args, 1, args.length));
                 else
                     sender.sendMessage("Bad commands");
-            }
-            else {
+            } else {
                 sender.sendMessage("Bad commands");
             }
             run(sender, args);
+        }
         return true;
     }
 
@@ -110,7 +108,11 @@ public class Command implements CommandExecutor, TabCompleter {
             else {
                 if(subCommands.containsKey(args[0]))
                 {
-                    complete.addAll(subCommands.get(args[0]).onTabComplete(sender, command, label, Arrays.copyOfRange(args, 1, args.length)));
+                    SubCommands sc = subCommands.get(args[0]);
+                    if(sc != null)
+                    {
+                        complete.addAll(sc.onTabComplete(sender, command, label, Arrays.copyOfRange(args, 1, args.length)));
+                    }
                 }
             }
         }

@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 public class MenuListener implements Listener {
 
-    private HashMap<Inventory, Menu> menuMap = new HashMap<>();
+    private final HashMap<Inventory, Menu> menuMap = new HashMap<>();
 
     public void add(Menu menu)
     {

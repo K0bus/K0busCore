@@ -29,12 +29,12 @@ public class StringUtils {
     {
         str = str.replace("_", " ");
         String[] strings = str.split(" ");
-        String finalString = "";
+        StringBuilder finalString = new StringBuilder();
         for (String s:strings) {
             s = s.substring(0,1).toUpperCase() + s.substring(1).toLowerCase();
-            if(finalString != "") finalString = finalString + " ";
-            finalString = finalString+s;
+            if(!finalString.toString().equals("")) finalString.append(" ");
+            finalString.append(s);
         }
-        return finalString;
+        return finalString.toString();
     }
 }

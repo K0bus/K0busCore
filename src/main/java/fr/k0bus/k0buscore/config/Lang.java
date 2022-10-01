@@ -1,14 +1,12 @@
 package fr.k0bus.k0buscore.config;
 
 import fr.k0bus.k0buscore.utils.StringUtils;
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class Lang extends Configuration{
@@ -16,14 +14,17 @@ public class Lang extends Configuration{
     public Lang(String lang, JavaPlugin instance) {
         super(lang + ".yml", instance, "lang");
         FileConfiguration defaultConfig = null;
-        if(plugin.getResource("lang/" + lang + ".yml") != null)
-        {
-            defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(plugin.getResource("lang/" + lang + ".yml")));
-        }
+
+        InputStream is = plugin.getResource("lang/" + lang + ".yml");
+        if(is != null)
+            defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(is));
         else
         {
-            defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(plugin.getResource("lang/fr_FR.yml")));
+            is = plugin.getResource("lang/en_US.yml");
+            if(is != null)
+                defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(is));
         }
+
         if(defaultConfig != null)
             for(String key: defaultConfig.getKeys(false))
             {
@@ -36,6 +37,7 @@ public class Lang extends Configuration{
 
     public void checkSection(ConfigurationSection section)
     {
+        if(section == null) return;
         for(String key: section.getKeys(false))
         {
             if(section.isConfigurationSection(key))

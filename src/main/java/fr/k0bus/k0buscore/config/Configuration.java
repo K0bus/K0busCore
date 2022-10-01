@@ -92,12 +92,8 @@ public class Configuration {
 
         try {
             config.load(file);
-        } catch (FileNotFoundException ex) {
+        } catch (IOException | InvalidConfigurationException ex) {
             ex.printStackTrace();
-        } catch (IOException ex) {
-            throw ex;
-        } catch (InvalidConfigurationException ex) {
-            throw ex;
         }
 
         return config;

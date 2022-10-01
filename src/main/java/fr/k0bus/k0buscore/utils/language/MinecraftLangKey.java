@@ -1,6 +1,5 @@
 package fr.k0bus.k0buscore.utils.language;
 
-import net.md_5.bungee.api.chat.TranslatableComponent;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
@@ -15,17 +14,21 @@ import org.jetbrains.annotations.NotNull;
 public class MinecraftLangKey {
     public static @NotNull String getTranslationKey(ItemStack itemStack)
     {
-        if(itemStack.hasItemMeta())
-            if (itemStack.getItemMeta().hasDisplayName())
-                return itemStack.getItemMeta().getDisplayName();
-        Material m = itemStack.getType();
         ItemMeta itemMeta = itemStack.getItemMeta();
+        Material m = itemStack.getType();
+
+        /* Check for some Custom DisplayName */
+        if(itemMeta != null)
+            if (itemMeta.hasDisplayName())
+                return itemMeta.getDisplayName();
+        /* Check for Potions / Tiped Arrow */
         if(itemMeta instanceof PotionMeta)
         {
             PotionMeta potionMeta = (PotionMeta) itemMeta;
             if(!potionMeta.hasCustomEffects()) return getTranslationKey(m);
             return getTranslationKey(m, potionMeta.getCustomEffects().get(0));
         }
+
         return getTranslationKey(m);
     }
 

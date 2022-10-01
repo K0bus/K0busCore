@@ -1,7 +1,6 @@
 package fr.k0bus.k0buscore;
 
 import fr.k0bus.k0buscore.utils.StringUtils;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 

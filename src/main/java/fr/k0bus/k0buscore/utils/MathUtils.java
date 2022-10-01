@@ -55,8 +55,8 @@ public class MathUtils {
         String suffix = e.getValue();
 
         long truncated = value / (divideBy / 10); //the number part of the output times 10
-        boolean hasDecimal = truncated < 100 && (truncated / 10d) != (truncated / 10);
-        double finalValue = hasDecimal ? (truncated / 10d) : (truncated / 10);
+        boolean hasDecimal = truncated < 100 && (truncated / 10d) != (truncated / (double)10);
+        double finalValue = hasDecimal ? (truncated / 10d) : (truncated / (double)10);
         finalValue = java.lang.Math.round(finalValue * 100.0) / 100.0;
         return finalValue + suffix;
     }

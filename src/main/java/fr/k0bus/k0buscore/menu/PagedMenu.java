@@ -98,7 +98,7 @@ public class PagedMenu extends Menu {
 
     public int getMaxPage(Object[] objects)
     {
-        return (int) Math.ceil(objects.length / slots.length);
+        return (int) Math.ceil((double)objects.length / (double)slots.length);
     }
 
     public int getSlotParPage()
