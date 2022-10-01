@@ -27,6 +27,7 @@ public class StringUtils {
 
     public static String proper(String str)
     {
+        str = str.replace("_", " ");
         String[] strings = str.split(" ");
         String finalString = "";
         for (String s:strings) {
