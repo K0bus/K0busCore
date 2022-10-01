@@ -6,7 +6,7 @@
 
     <groupId>fr.k0bus</groupId>
     <artifactId>K0busCore</artifactId>
-    <version>0.8.2-BETA</version>
+    <version>0.8.4-BETA</version>
     <packaging>jar</packaging>
 
     <name>K0busCore</name>
@@ -37,7 +37,7 @@
                     <relocations>
                         <relocation>
                             <pattern>dev.dbassett</pattern>
-                            <shadedPattern>fr.k0bus.compiled.dev.dbassett</shadedPattern>
+                            <shadedPattern>fr.k0bus.k0buscore_libs.dev.dbassett</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
