@@ -1,6 +1,9 @@
 package fr.k0bus.k0buscore.utils.language;
 
-import net.md_5.bungee.api.chat.TranslatableComponent;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import fr.k0bus.k0buscore.K0busCore;
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
@@ -8,33 +11,91 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.*;
+import java.net.URL;
+
 public class MinecraftLang {
-    public static String translate(String translationKey)
+
+
+    String mcVersion;
+    String lang;
+
+    JsonObject jsonObject;
+
+    public MinecraftLang(K0busCore plugin, String lang, String mcVersion)
     {
-        return new TranslatableComponent(translationKey).toPlainText();
+        this.mcVersion = mcVersion.toLowerCase();
+        this.lang = lang.toLowerCase();
+        String FILE_URL = "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/" + mcVersion.toLowerCase() + "/assets/minecraft/lang/" + lang.toLowerCase() + ".json";
+        File dir = new File(plugin.getDataFolder(), "locale");
+        if(!dir.exists()) dir.mkdir();
+        File localeFile = new File(dir, lang.toLowerCase() + ".json");
+        if(!localeFile.exists()) {
+            plugin.getLog().log("&2Starting downloading " + lang + ".json on version" + mcVersion.toLowerCase());
+            try (BufferedInputStream in = new BufferedInputStream(new URL(FILE_URL).openStream());
+                 FileOutputStream fileOutputStream = new FileOutputStream(localeFile)) {
+                byte[] dataBuffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+                    fileOutputStream.write(dataBuffer, 0, bytesRead);
+                }
+            } catch (IOException e) {
+                // handle exception
+                plugin.getLog().log("&cCan't download locale file " + lang + ".json");
+                plugin.getLog().log("&cURL : " + FILE_URL);
+                plugin.getLog().log("&cDestination : " + localeFile.getPath());
+            }
+        }
+        if(localeFile.exists())
+        {
+            plugin.getLog().log("&2Loading file " + this.lang + ".json");
+            Gson gson = new Gson();
+            try {
+                jsonObject = gson.fromJson(new FileReader(localeFile), JsonObject.class);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            if(jsonObject == null)
+                plugin.getLog().log("&cFile not loaded successfully !");
+            else
+                plugin.getLog().log("&2File loaded successfully !");
+        }
+
     }
-    public static String translate(ItemStack arg)
+    public MinecraftLang(K0busCore plugin, String lang)
     {
-        return translate(MinecraftLangKey.getTranslationKey(arg));
+        this(plugin, lang, Bukkit.getBukkitVersion().split("-")[0]);
     }
-    public static String translate(Material arg)
+
+    public String get(String k)
     {
-        return translate(MinecraftLangKey.getTranslationKey(arg));
+        if(jsonObject == null) return "null";
+        if(jsonObject.get(k) == null) return "not contain";
+        return jsonObject.get(k).getAsString();
     }
-    public static String translate(Enchantment arg)
+
+    public String get(Material material)
     {
-        return translate(MinecraftLangKey.getTranslationKey(arg));
+        return get(MinecraftLangKey.getTranslationKey(material));
     }
-    public static String translate(EntityType arg)
+    public String get(Effect effect)
     {
-        return translate(MinecraftLangKey.getTranslationKey(arg));
+        return get(MinecraftLangKey.getTranslationKey(effect));
     }
-    public static String translate(Effect arg)
+    public String get(Enchantment enchantment)
     {
-        return translate(MinecraftLangKey.getTranslationKey(arg));
+        return get(MinecraftLangKey.getTranslationKey(enchantment));
     }
-    public static String translate(Statistic arg)
+    public String get(EntityType entityType)
     {
-        return translate(MinecraftLangKey.getTranslationKey(arg));
+        return get(MinecraftLangKey.getTranslationKey(entityType));
+    }
+    public String get(Statistic statistic)
+    {
+        return get(MinecraftLangKey.getTranslationKey(statistic));
+    }
+    public String get(ItemStack itemStack)
+    {
+        return get(MinecraftLangKey.getTranslationKey(itemStack));
     }
 }

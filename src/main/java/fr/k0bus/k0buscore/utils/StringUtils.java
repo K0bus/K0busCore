@@ -9,6 +9,11 @@ public class StringUtils {
 
     private static final Pattern HEX_PATTERN = Pattern.compile("&#(\\w{5}[0-9a-f])");
 
+    public static String parse(String s)
+    {
+        return Utils.PAPIParse(translateColor(s));
+    }
+
     public static String translateColor(String s) {
 
         if (VersionUtils.getMCVersion() < 16) {
@@ -16,7 +21,7 @@ public class StringUtils {
         }
 
         Matcher matcher = HEX_PATTERN.matcher(s);
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         while(matcher.find()) {
             matcher.appendReplacement(buffer, ChatColor.of("#" + matcher.group(1)).toString());
@@ -32,7 +37,7 @@ public class StringUtils {
         StringBuilder finalString = new StringBuilder();
         for (String s:strings) {
             s = s.substring(0,1).toUpperCase() + s.substring(1).toLowerCase();
-            if(!finalString.toString().equals("")) finalString.append(" ");
+            if(!finalString.toString().isEmpty()) finalString.append(" ");
             finalString.append(s);
         }
         return finalString.toString();

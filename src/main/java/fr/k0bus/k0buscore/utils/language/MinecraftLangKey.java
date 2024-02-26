@@ -22,9 +22,8 @@ public class MinecraftLangKey {
             if (itemMeta.hasDisplayName())
                 return itemMeta.getDisplayName();
         /* Check for Potions / Tiped Arrow */
-        if(itemMeta instanceof PotionMeta)
+        if(itemMeta instanceof PotionMeta potionMeta)
         {
-            PotionMeta potionMeta = (PotionMeta) itemMeta;
             if(!potionMeta.hasCustomEffects()) return getTranslationKey(m);
             return getTranslationKey(m, potionMeta.getCustomEffects().get(0));
         }

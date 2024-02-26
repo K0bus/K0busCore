@@ -8,7 +8,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -46,20 +45,23 @@ public class Configuration {
 
     public void loadConfig()
     {
-        if(plugin.getResource(filename) != null)
-            if(!file.exists())
+        if(!file.exists())
+        {
+            if(plugin.getResource(filename) != null)
+            {
                 plugin.saveResource(filename, false);
+            }
             else
             {
-                this.file.mkdirs();
+                this.file.getParentFile().mkdirs();
                 try {
                     this.file.createNewFile();
-                    plugin.saveResource(filename, false);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-        if(this.file.exists())
+        }
+        if(file.exists())
         {
             try {
                 this.configuration = loadConfiguration(this.file);

@@ -9,9 +9,9 @@ public enum VersionType {
     RELEASE("release", 5, true),
     SNAPSHOT("snapshot", 6, false);
 
-    String name;
-    int level;
-    boolean stable;
+    final String name;
+    final int level;
+    final boolean stable;
 
     VersionType(String name, int level, boolean stable) {
         this.name = name;

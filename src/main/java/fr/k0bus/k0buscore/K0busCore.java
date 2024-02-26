@@ -1,35 +1,77 @@
 package fr.k0bus.k0buscore;
 
 import fr.k0bus.k0buscore.menu.MenuListener;
+import fr.k0bus.k0buscore.updater.UpdateChecker;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class K0busCore extends JavaPlugin {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
-    public static K0busCore instance;
-    public static MenuListener menuListener;
-    private static Economy econ = null;
-    private static Permission perms = null;
-    private static Chat chat = null;
+public class K0busCore extends JavaPlugin {
+
+    private static K0busCore instance;
+    private static MenuListener menuListener;
+    private Logger logger;
+    private Economy econ = null;
+    private Permission perms = null;
+    private Chat chat = null;
+
+    private final List<UUID> antiSpam = new ArrayList<>();
+    public int antiSpamTick = 5;
+
 
     @Override
     public void onEnable() {
         // Plugin startup logic
+        init();
+        initVault();
+    }
+
+    public void init()
+    {
+        // Plugin startup logic
         instance = this;
         menuListener = new MenuListener();
+        logger = new Logger(this, false);
         registerEvent(menuListener);
-        if(getServer().getPluginManager().isPluginEnabled("Vault"))
-        {
-            if(setupEconomy()) getLogger().info("Vault Economy loaded successfully !");
-            if(setupChat()) getLogger().info("Vault Chat loaded successfully !");
-            if(setupPermissions()) getLogger().info("Vault Permission loaded successfully !");
-        }
-        else {
-            getLogger().info("Vault is not enabled on this server !");
+    }
+    public void initVault()
+    {
+        if(this.getDescription().getSoftDepend().contains("Vault") || this.getDescription().getDepend().contains("Vault"))
+            if(getServer().getPluginManager().isPluginEnabled("Vault"))
+            {
+                if(setupEconomy()) getLog().log("&2Vault Economy loaded successfully !");
+                if(setupChat()) getLog().log("&2Vault Chat loaded successfully !");
+                if(setupPermissions()) getLog().log("&2Vault Permission loaded successfully !");
+            }
+            else {
+                getLog().log("&6Vault is not enabled on this server !");
+            }
+    }
+
+    public void setMenuListener(JavaPlugin plugin)
+    {
+        menuListener = new MenuListener();
+        plugin.getServer().getPluginManager()
+                .registerEvents(menuListener, plugin);
+    }
+
+    protected void checkUpdate(int id)
+    {
+        UpdateChecker updateChecker = new UpdateChecker(this, id);
+        if (updateChecker.isUpToDate()) {
+            logger.log("&2" + this.getDescription().getName() + " &av" + this.getDescription().getVersion());
+        } else {
+            logger.log("&2" + this.getDescription().getName() + " &cv" + this.getDescription().getVersion() +
+                    " (Update " + updateChecker.getVersion() + " available on SpigotMC)");
         }
     }
 
@@ -76,20 +118,39 @@ public final class K0busCore extends JavaPlugin {
         return menuListener;
     }
 
-    public static Economy getEcon() {
+    public Logger getLog() {
+        return logger;
+    }
+
+    public void setAntiSpamTick(int antiSpamTick) {
+        this.antiSpamTick = antiSpamTick;
+    }
+
+    public Economy getEcon() {
         return econ;
     }
 
-    public static Chat getChat() {
+    public Chat getChat() {
         return chat;
     }
 
-    public static Permission getPerms() {
+    public Permission getPerms() {
         return perms;
     }
 
-    public static boolean isVaultEnabled()
+    public boolean isVaultEnabled()
     {
         return getEcon() != null;
     }
+
+    public void sendMessage(HumanEntity p, String str)
+    {
+        if(antiSpam.contains(p.getUniqueId())) return;
+        antiSpam.add(p.getUniqueId());
+        p.sendMessage(str);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(getInstance(), ()->{
+            antiSpam.remove(p.getUniqueId());
+        }, antiSpamTick);
+    }
+
 }

@@ -1,28 +1,35 @@
 package fr.k0bus.k0buscore.menu;
 
 import fr.k0bus.k0buscore.K0busCore;
-import me.clip.placeholderapi.PlaceholderAPI;
+import fr.k0bus.k0buscore.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 
-public abstract class Menu implements Listener {
+public abstract class Menu {
 
     private final Inventory inventory;
     private final HashMap<Integer, MenuItems> menuItemsHashMap = new HashMap<>();
 
-    public Menu(int size, String name)
+    private final JavaPlugin plugin;
+
+    public Menu(int size, String name, JavaPlugin plugin)
     {
-        inventory = Bukkit.createInventory(null,9*size, PlaceholderAPI.setPlaceholders(null,name));
+        inventory = Bukkit.createInventory(null,9*size, Utils.PAPIParse(name));
+        this.plugin = plugin;
         K0busCore.getMenuListener().add(this);
     }
-    public Menu(String name)
+    public Menu(String name, JavaPlugin pl)
     {
-        this(6, name);
+        this(6, name, pl);
+    }
+
+    public JavaPlugin getPlugin() {
+        return plugin;
     }
 
     public abstract void init();
@@ -59,7 +66,9 @@ public abstract class Menu implements Listener {
     public void onDrag(InventoryDragEvent e) {
         e.setCancelled(true);
     }
-    public void onOpen(InventoryOpenEvent e) {}
+    public void onOpen(InventoryOpenEvent e) {
+
+    }
     public void onClose(InventoryCloseEvent e) {}
     public void onInteract(InventoryInteractEvent e) {}
 }

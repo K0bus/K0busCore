@@ -19,7 +19,7 @@ public class MenuListener implements Listener {
     public void remove(Menu menu)
     {
         if(!menuMap.containsKey(menu.getInventory())) return;
-        if(menu.getInventory().getViewers().size()>0) return;
+        if(!menu.getInventory().getViewers().isEmpty()) return;
         menuMap.remove(menu.getInventory());
     }
 

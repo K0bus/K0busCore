@@ -5,16 +5,16 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PagedMenu extends Menu {
+public class PagedMenuExtended extends MenuExtended {
 
     int page;
     int[] slots = null;
     List<MenuItems> content = new ArrayList<>();
 
-    public PagedMenu(int size, String name, JavaPlugin plugin) {
+    public PagedMenuExtended(int size, String name, JavaPlugin plugin) {
         super(size, name, plugin);
     }
-    public PagedMenu(String name, JavaPlugin plugin) {
+    public PagedMenuExtended(String name, JavaPlugin plugin) {
         super(6, name, plugin);
     }
 

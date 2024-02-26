@@ -13,11 +13,15 @@ import java.util.function.Consumer;
 public class MenuItems extends ItemStack {
 
     private Consumer<InventoryClickEvent> consumer;
-    private Sound sound = Sound.UI_BUTTON_CLICK;
+    private Sound sound;
 
     public MenuItems(Material m, int size)
     {
         super(m, size);
+        try {
+            sound = Sound.UI_BUTTON_CLICK;
+        }
+        catch (Error ignored) {}
     }
     public MenuItems(Material m, int size, Consumer<InventoryClickEvent> consumer)
     {
@@ -40,18 +44,22 @@ public class MenuItems extends ItemStack {
 
     public MenuItems(ItemStack itemStack, Consumer<InventoryClickEvent> consumer, Sound sound)
     {
-        super(itemStack);
+        this(itemStack);
         setConsumer(consumer);
         setSound(sound);
     }
     public MenuItems(ItemStack itemStack, Consumer<InventoryClickEvent> consumer)
     {
-        super(itemStack);
+        this(itemStack);
         setConsumer(consumer);
     }
     public MenuItems(ItemStack itemStack)
     {
         super(itemStack);
+        try {
+            sound = Sound.UI_BUTTON_CLICK;
+        }
+        catch (Error ignored) {}
     }
 
     public void setConsumer(Consumer<InventoryClickEvent> consumer) {
@@ -99,7 +107,8 @@ public class MenuItems extends ItemStack {
         if(!isClickable()) return;
         if(!(e.getWhoClicked() instanceof Player)) return;
         Player p = (Player) e.getWhoClicked();
-        p.playSound(p.getLocation(), sound, 0.5f, 1);
+        if(sound != null)
+            p.playSound(p.getLocation(), sound, 0.5f, 1);
         consumer.accept(e);
     }
 }

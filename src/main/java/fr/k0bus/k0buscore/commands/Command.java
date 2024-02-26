@@ -2,9 +2,10 @@ package fr.k0bus.k0buscore.commands;
 
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -16,7 +17,7 @@ public class Command implements CommandExecutor, TabCompleter {
 
     Class senderClass;
 
-    List<String> completer = new ArrayList<>();
+    HashMap<Integer, List<String>> completer = new HashMap<>();
 
     public Command(String command, String permission, Class senderClass)
     {
@@ -60,6 +61,10 @@ public class Command implements CommandExecutor, TabCompleter {
         return permission == null || sender.hasPermission(permission);
     }
 
+    public void setCompleter(int args, List<String> list) {
+        completer.put(args, list);
+    }
+
     public void run(CommandSender sender, String[] args) {}
 
     @Override
@@ -67,25 +72,30 @@ public class Command implements CommandExecutor, TabCompleter {
         if(!isAllowed(sender)){
             sender.sendMessage("Not allowed");
         }
-        if(subCommands.size()>0) {
+        if(!subCommands.isEmpty()) {
             if (args.length > 0) {
-                if (subCommands.containsKey(args[0]))
+                if (subCommands.containsKey(args[0])) {
                     subCommands.get(args[0]).onCommand(sender, command, label, Arrays.copyOfRange(args, 1, args.length));
+                    return true;
+                }
                 else
+                {
                     sender.sendMessage("Bad commands");
+                    return true;
+                }
             } else {
                 sender.sendMessage("Bad commands");
             }
-            run(sender, args);
         }
+        run(sender, args);
         return true;
     }
 
-    @Nullable
+    @NotNull
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull org.bukkit.command.Command command, @NotNull String label, @NotNull String[] args) {
         List<String> complete = new ArrayList<>();
-        if(subCommands.size() > 0)
+        if(!subCommands.isEmpty())
         {
             if(args.length == 1)
             {
@@ -116,6 +126,25 @@ public class Command implements CommandExecutor, TabCompleter {
                 }
             }
         }
+        if(args.length == 0)
+        {
+            if(completer.containsKey(args.length))
+                complete.addAll(completer.get(args.length));
+        }
+        else {
+            if(completer.containsKey(args.length-1))
+                complete.addAll(completer.get(args.length-1));
+        }
         return complete;
+    }
+
+    public void register(JavaPlugin plugin)
+    {
+        PluginCommand cmd = plugin.getCommand(getCommand());
+        if(cmd != null)
+        {
+            cmd.setExecutor(this);
+            cmd.setTabCompleter(this);
+        }
     }
 }

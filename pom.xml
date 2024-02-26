@@ -6,16 +6,16 @@
 
     <groupId>fr.k0bus</groupId>
     <artifactId>K0busCore</artifactId>
-    <version>0.8.4-BETA</version>
-    <packaging>jar</packaging>
+    <version>1.0.2</version>
 
     <name>K0busCore</name>
 
     <description>K0bus plugin core</description>
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
     <url>https://k0bus.fr</url>
 
     <build>
@@ -23,7 +23,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.11.0</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -32,7 +32,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.5.0</version>
                 <configuration>
                     <relocations>
                         <relocation>
@@ -60,20 +60,13 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ftp</artifactId>
-                <version>1.0-alpha-6</version>
-            </extension>
-        </extensions>
     </build>
 
     <distributionManagement>
         <repository>
-            <id>fr.k0bus</id>
-            <name>K0bus Maven Repo</name>
-            <url>ftp://ascarys@ftp.cluster031.hosting.ovh.net:21/k0bus/maven/repo</url>
+            <id>k0bus-repository-spigot</id>
+            <name>K0bus Repository</name>
+            <url>https://maven.k0bus.fr/spigot</url>
         </repository>
     </distributionManagement>
 
@@ -101,6 +94,10 @@
         <repository>
             <id>skullcreator-repo</id>
             <url>https://github.com/deanveloper/SkullCreator/raw/mvn-repo/</url>
+        </repository>
+        <repository>
+            <id>minecraft-repo</id>
+            <url>https://libraries.minecraft.net/</url>
         </repository>
     </repositories>
 
@@ -130,10 +127,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>dev.dbassett</groupId>
-            <artifactId>skullcreator</artifactId>
-            <version>3.0.1</version>
-            <scope>compile</scope>
+            <groupId>com.mojang</groupId>
+            <artifactId>authlib</artifactId>
+            <version>1.5.21</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

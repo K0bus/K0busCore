@@ -39,7 +39,7 @@ public class UpdateChecker {
     public boolean isUpToDate()
     {
         if(spigotVersion != null)
-            return spigotVersion.compareTo(this.version)<0;
+            return spigotVersion.compareTo(this.version)<=0;
         return false;
     }
     public boolean isStable()
