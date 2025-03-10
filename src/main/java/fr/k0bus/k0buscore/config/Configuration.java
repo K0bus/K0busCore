@@ -1,7 +1,6 @@
 package fr.k0bus.k0buscore.config;
 
 import org.apache.commons.lang.Validate;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -10,185 +9,131 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 
+/**
+ * Manages YAML configuration files for a Bukkit plugin.
+ */
 public class Configuration {
 
-    JavaPlugin plugin;
-    File file;
-    FileConfiguration configuration;
-    String filename;
+    private final JavaPlugin plugin;
+    private final File file;
+    private FileConfiguration configuration;
+    private final String filename;
 
-    public Configuration(String filename, JavaPlugin instance)
-    {
+    /**
+     * Creates a new configuration file instance.
+     *
+     * @param filename Name of the configuration file
+     * @param instance Plugin instance
+     */
+    public Configuration(String filename, JavaPlugin instance) {
         this.plugin = instance;
         this.filename = filename;
         this.file = new File(instance.getDataFolder(), filename);
         loadConfig();
     }
 
-    public Configuration(String filename, JavaPlugin instance, String dirName)
-    {
+    /**
+     * Creates a new configuration file in a specific directory.
+     *
+     * @param filename Name of the configuration file
+     * @param instance Plugin instance
+     * @param dirName  Directory name where the file is stored
+     */
+    public Configuration(String filename, JavaPlugin instance, String dirName) {
         this.plugin = instance;
         this.filename = filename;
         File dir = new File(plugin.getDataFolder(), dirName);
-        if(!dir.exists())
-            dir.mkdirs();
-        if(dir.isDirectory())
-            this.file = new File(dir, filename);
-        else
-            this.file = new File(dir.getParentFile(), filename);
+        if (!dir.exists()) dir.mkdirs();
+        this.file = dir.isDirectory() ? new File(dir, filename) : new File(dir.getParentFile(), filename);
         loadConfig();
     }
 
-    public void loadConfig()
-    {
-        if(!file.exists())
-        {
-            if(plugin.getResource(filename) != null)
-            {
+    /**
+     * Loads the configuration file.
+     */
+    public void loadConfig() {
+        if (!file.exists()) {
+            if (plugin.getResource(filename) != null) {
                 plugin.saveResource(filename, false);
-            }
-            else
-            {
-                this.file.getParentFile().mkdirs();
+            } else {
+                file.getParentFile().mkdirs();
                 try {
-                    this.file.createNewFile();
+                    file.createNewFile();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
-        if(file.exists())
-        {
-            try {
-                this.configuration = loadConfiguration(this.file);
-            } catch (InvalidConfigurationException e)
-            {
-                plugin.getLogger().log(Level.SEVERE, filename + " can't be loaded ! Check file syntax first !");
-                plugin.getLogger().log(Level.SEVERE, e.getMessage());
-                File renamed = new File(file.getParentFile(), filename + ".old");
-                if(renamed.exists())
-                    renamed.delete();
-                file.renameTo(renamed);
-                loadConfig();
-            }
-            catch (IOException ex)
-            {
-                plugin.getLogger().log(Level.SEVERE, "Can't read file " + filename);
-                this.configuration = new YamlConfiguration();
-            }
-        }
-        else
-        {
+        try {
+            this.configuration = loadConfiguration(this.file);
+        } catch (InvalidConfigurationException e) {
+            plugin.getLogger().log(Level.SEVERE, filename + " can't be loaded! Check file syntax first!");
+            plugin.getLogger().log(Level.SEVERE, e.getMessage());
+            File renamed = new File(file.getParentFile(), filename + ".old");
+            if (renamed.exists()) renamed.delete();
+            file.renameTo(renamed);
+            loadConfig();
+        } catch (IOException ex) {
+            plugin.getLogger().log(Level.SEVERE, "Can't read file " + filename);
             this.configuration = new YamlConfiguration();
         }
     }
 
+    /**
+     * Loads a YAML configuration file.
+     *
+     * @param file File to load
+     * @return Parsed YAML configuration
+     * @throws IOException                  If file cannot be read
+     * @throws InvalidConfigurationException If file contains invalid syntax
+     */
     private static YamlConfiguration loadConfiguration(File file) throws IOException, InvalidConfigurationException {
         Validate.notNull(file, "File cannot be null");
-
         YamlConfiguration config = new YamlConfiguration();
-
-        try {
-            config.load(file);
-        } catch (IOException | InvalidConfigurationException ex) {
-            ex.printStackTrace();
-        }
-
+        config.load(file);
         return config;
     }
-    public void save()
-    {
+
+    /**
+     * Saves the configuration to the file.
+     */
+    public void save() {
         try {
             this.configuration.save(this.file);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    public String getString(String path)
-    {
-        return this.configuration.getString(path);
-    }
-    public boolean getBoolean(String path)
-    {
-        return this.configuration.getBoolean(path);
-    }
-    public int getInt(String path)
-    {
-        return this.configuration.getInt(path);
-    }
-    public double getDouble(String path)
-    {
-        return this.configuration.getDouble(path);
-    }
-    public ConfigurationSection getConfigurationSection(String path){return this.configuration.getConfigurationSection(path);}
-    public boolean contains(String path){ return this.configuration.contains(path); }
-    public boolean isString(String path) { return this.configuration.isString(path); }
-    public Set<String> getKeys(boolean deep){return this.configuration.getKeys(deep); }
-    public Set<String> getKeysFromPath(String path, boolean deep){return this.configuration.getConfigurationSection(path).getKeys(deep); }
-    public List<String> getStringList(String path){return this.configuration.getStringList(path);}
-    public List<?> getList(String path){return this.configuration.getList(path);}
 
-    public File getFile() {
-        return file;
-    }
-
-    public void set(String path, Object o)
-    {
-        this.configuration.set(path, o);
-        try {
-            this.configuration.save(this.file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public static void updateConfig(String cfg, JavaPlugin plugin)
-    {
+    /**
+     * Updates the configuration file with default values if missing.
+     *
+     * @param cfg    Configuration file name
+     * @param plugin Plugin instance
+     */
+    public static void updateConfig(String cfg, JavaPlugin plugin) {
         File file = new File(plugin.getDataFolder(), cfg);
         file.getParentFile().mkdirs();
-        if(!file.exists())
-            plugin.saveResource(cfg, false);
-        FileConfiguration default_conf = YamlConfiguration.loadConfiguration(new InputStreamReader(plugin.getResource(cfg)));
-        FileConfiguration conf = null;
+        if (!file.exists()) plugin.saveResource(cfg, false);
+
+        FileConfiguration defaultConf = YamlConfiguration.loadConfiguration(new InputStreamReader(plugin.getResource(cfg)));
+        FileConfiguration conf;
         try {
             conf = loadConfiguration(file);
-        } catch (InvalidConfigurationException e)
-        {
-            plugin.getLogger().log(Level.SEVERE, cfg + " can't be loaded ! Check file syntax first !");
-            plugin.getLogger().log(Level.SEVERE, e.getMessage());
-            File renamed = new File(file.getParentFile(), cfg + ".old");
-            if(renamed.exists())
-                renamed.delete();
-            file.renameTo(renamed);
+        } catch (InvalidConfigurationException | IOException e) {
+            plugin.getLogger().log(Level.SEVERE, cfg + " can't be loaded! Check file syntax first!");
             return;
         }
-        catch (IOException ex)
-        {
-            plugin.getLogger().log(Level.SEVERE, "Can't read file " + cfg);
-        }
-        for (String path : default_conf.getKeys(true)) {
-            if(!conf.contains(path) || conf.get(path).getClass().getName() != default_conf.get(path).getClass().getName())
-            {
-                plugin.getLogger().log(Level.WARNING, path + " added to " + cfg);
-                conf.set(path, default_conf.get(path));
-            }
-        }
-        for (String path : conf.getKeys(true)) {
-            Object confOption = conf.get(path);
-            Object confOptionDefault = default_conf.get(path);
-            if(confOption != null && confOptionDefault != null)
-            {
-                if(!default_conf.contains(path) || !confOption.getClass().getName().equals(confOptionDefault.getClass().getName()))
-                {
-                    plugin.getLogger().log(Level.WARNING, path + " removed to " + cfg);
-                    conf.set(path, null);
-                }
-            }
 
+        for (String path : defaultConf.getKeys(true)) {
+            if (!conf.contains(path) || !conf.get(path).getClass().getName().equals(defaultConf.get(path).getClass().getName())) {
+                plugin.getLogger().log(Level.WARNING, path + " added to " + cfg);
+                conf.set(path, defaultConf.get(path));
+            }
         }
+
         try {
             conf.save(file);
         } catch (IOException e) {
@@ -196,7 +141,30 @@ public class Configuration {
         }
     }
 
+    /**
+     * Gets the configuration object.
+     *
+     * @return FileConfiguration object
+     */
     public FileConfiguration getConfiguration() {
         return configuration;
+    }
+
+    /**
+     * Gets the configuration file.
+     *
+     * @return Configuration file
+     */
+    public File getFile() {
+        return file;
+    }
+
+    /**
+     * Gets the plugins instance
+     *
+     * @return Bukkit plugins instance
+     */
+    public JavaPlugin getPlugin() {
+        return plugin;
     }
 }

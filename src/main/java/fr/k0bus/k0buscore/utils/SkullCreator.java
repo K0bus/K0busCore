@@ -229,6 +229,13 @@ public class SkullCreator {
         state.update(false, false);
     }
 
+    /**
+     * Sets the block type to a player skull. This method first checks if the
+     * server is using a legacy version of Minecraft (before 1.13) and adjusts
+     * the block type accordingly.
+     *
+     * @param block The block to change to a skull type.
+     */
     private static void setToSkull(Block block) {
         checkLegacy();
 
@@ -242,12 +249,27 @@ public class SkullCreator {
         }
     }
 
+    /**
+     * Ensures that an object is not null. If the object is null, throws a
+     * NullPointerException with a custom message.
+     *
+     * @param o    The object to check.
+     * @param name The name of the object (used in the exception message).
+     * @throws NullPointerException if the object is null.
+     */
     private static void notNull(Object o, String name) {
         if (o == null) {
             throw new NullPointerException(name + " should not be null!");
         }
     }
 
+    /**
+     * Converts a URL to a Base64-encoded string that represents the skin texture.
+     * This is used for setting player skins in the game.
+     *
+     * @param url The URL of the skin texture.
+     * @return The Base64-encoded string representing the skin texture.
+     */
     private static String urlToBase64(String url) {
 
         URI actualUrl;
@@ -260,8 +282,15 @@ public class SkullCreator {
         return Base64.getEncoder().encodeToString(toEncode.getBytes());
     }
 
+    /**
+     * Creates a GameProfile from a Base64 string. The GameProfile includes
+     * a random UUID based on the Base64 string and is used to set player skins.
+     *
+     * @param b64 The Base64 string representing the skin texture.
+     * @return The created GameProfile with the skin texture.
+     */
     private static GameProfile makeProfile(String b64) {
-        // random uuid based on the b64 string
+        // Random UUID based on the b64 string
         UUID id = new UUID(
                 b64.substring(b64.length() - 20).hashCode(),
                 b64.substring(b64.length() - 10).hashCode()
@@ -271,6 +300,13 @@ public class SkullCreator {
         return profile;
     }
 
+    /**
+     * Mutates the block's state by setting the GameProfile for the skull's texture.
+     * This method uses reflection to modify the profile field in the Skull block.
+     *
+     * @param block The Skull block whose state to mutate.
+     * @param b64   The Base64 string representing the skin texture.
+     */
     private static void mutateBlockState(Skull block, String b64) {
         try {
             if (blockProfileField == null) {
@@ -283,6 +319,14 @@ public class SkullCreator {
         }
     }
 
+    /**
+     * Mutates the item meta for a Skull item by setting the GameProfile for the
+     * skull's texture. It uses reflection to call the appropriate method or directly
+     * set the profile field, depending on the Minecraft API version.
+     *
+     * @param meta The SkullMeta for the skull item.
+     * @param b64  The Base64 string representing the skin texture.
+     */
     private static void mutateItemMeta(SkullMeta meta, String b64) {
         try {
             if (metaSetProfileMethod == null) {
@@ -291,7 +335,7 @@ public class SkullCreator {
             }
             metaSetProfileMethod.invoke(meta, makeProfile(b64));
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
-            // if in an older API where there is no setProfile method,
+            // If in an older API where there is no setProfile method,
             // we set the profile field directly.
             try {
                 if (metaProfileField == null) {
@@ -306,12 +350,14 @@ public class SkullCreator {
         }
     }
 
-    // suppress warning since PLAYER_HEAD doesn't exist in 1.12.2,
-    // but we expect this and catch the error at runtime.
+    /**
+     * Checks if the server is running a legacy version of the Bukkit API (before 1.13).
+     * If so, it will warn the user about the usage of the legacy API and provide a warning.
+     * This method is used to ensure compatibility with older versions.
+     */
     private static void checkLegacy() {
         try {
-            // if both of these succeed, then we are running
-            // in a legacy api, but on a modern (1.13+) server.
+            // If both of these succeed, we are running in a legacy API but on a modern (1.13+) server.
             Material.class.getDeclaredField("PLAYER_HEAD");
             Material.valueOf("SKULL");
 
@@ -321,4 +367,5 @@ public class SkullCreator {
             }
         } catch (NoSuchFieldException | IllegalArgumentException ignored) {}
     }
+
 }

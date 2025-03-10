@@ -12,15 +12,21 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+/**
+ * Utility class for handling the serialization and deserialization of player inventories and item stacks to and from Base64 strings.
+ * This class provides methods to convert player inventories and item arrays into Base64-encoded strings, and vice versa.
+ */
 public class InventoryUtils {
+
     /**
-     * Converts the player inventory to a String array of Base64 strings. First string is the content and second string is the armor.
+     * Converts a player's inventory into an array of Base64 strings. The first string represents the main content, and the second one represents the armor.
      *
-     * @param playerInventory to turn into an array of strings.
-     * @return Array of strings: [ main content, armor content ]
+     * @param playerInventory The player's inventory to convert into Base64 strings.
+     * @return An array of strings, where the first element is the content and the second element is the armor.
+     * @throws IllegalStateException If unable to serialize the inventory to Base64.
      */
     public static String[] playerInventoryToBase64(PlayerInventory playerInventory) throws IllegalStateException {
-        //get the main content part, this doesn't return the armor
+        // Get the main content part, this doesn't return the armor
         String content = toBase64(playerInventory);
         String armor = itemStackArrayToBase64(playerInventory.getArmorContents());
 
@@ -28,14 +34,11 @@ public class InventoryUtils {
     }
 
     /**
+     * Serializes an array of {@link ItemStack} objects to a Base64 string.
      *
-     * A method to serialize an {@link ItemStack} array to Base64 String.
-     * <p />
-     *
-     * Based off of {@link #toBase64(Inventory)}.
-     *
-     * @param items to turn into a Base64 String.
-     * @return Base64 string of the items.
+     * @param items The array of ItemStacks to serialize.
+     * @return The Base64 string representing the serialized item array.
+     * @throws IllegalStateException If unable to serialize the item stacks to Base64.
      */
     public static String itemStackArrayToBase64(ItemStack[] items) throws IllegalStateException {
         try {
@@ -59,13 +62,12 @@ public class InventoryUtils {
     }
 
     /**
-     * A method to serialize an inventory to Base64 string.
-     * Special thanks to Comphenix in the Bukkit forums or also known
-     * as aadnk on GitHub.
-     * <a href="https://gist.github.com/aadnk/8138186">Original Source</a>
+     * Serializes an {@link Inventory} to a Base64 string.
+     * This method serializes the contents of the entire inventory into Base64.
      *
-     * @param inventory to serialize
-     * @return Base64 string of the provided inventory
+     * @param inventory The inventory to serialize.
+     * @return The Base64 string representing the serialized inventory.
+     * @throws IllegalStateException If unable to serialize the inventory to Base64.
      */
     public static String toBase64(Inventory inventory) throws IllegalStateException {
         try {
@@ -89,16 +91,11 @@ public class InventoryUtils {
     }
 
     /**
+     * Deserializes a Base64-encoded string into an {@link Inventory}.
      *
-     * A method to get an {@link Inventory} from an encoded, Base64, string.
-     * <p />
-     *
-     * Special thanks to Comphenix in the Bukkit forums or also known
-     * as aadnk on GitHub.
-     * <a href="https://gist.github.com/aadnk/8138186">Original Source</a>
-     *
-     * @param data Base64 string of data containing an inventory.
-     * @return Inventory created from the Base64 string.
+     * @param data The Base64 string containing the serialized inventory.
+     * @return The deserialized Inventory object.
+     * @throws IOException If an I/O error occurs while decoding the inventory data.
      */
     public static Inventory fromBase64(String data) throws IOException {
         try {
@@ -119,13 +116,11 @@ public class InventoryUtils {
     }
 
     /**
-     * Gets an array of ItemStacks from Base64 string.
-     * <p />
+     * Deserializes a Base64-encoded string into an array of {@link ItemStack} objects.
      *
-     * Base off of {@link #fromBase64(String)}.
-     *
-     * @param data Base64 string to convert to ItemStack array.
-     * @return ItemStack array created from the Base64 string.
+     * @param data The Base64 string containing the serialized item array.
+     * @return The deserialized array of ItemStacks.
+     * @throws IOException If an I/O error occurs while decoding the item data.
      */
     public static ItemStack[] itemStackArrayFromBase64(String data) throws IOException {
         try {
